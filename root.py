@@ -50,7 +50,16 @@ class Root(object):
     @cherrypy.expose
     def index(self):
 
-        gtag = open("gtag.js").read()
+        gtag_string = open("gtag.js").read()
+
+        disclaimer_string = open("disclaimer.html").read()
+        
+        if is_session_authenticated():
+            desktop_menu_string = open("desktop_authenticated_menu.html").read()
+            mobile_menu_string = open("mobile_authenticated_menu.html").read()
+        else:
+            desktop_menu_string = open("desktop_unauthenticated_menu.html").read()
+            mobile_menu_string = open("mobile_unauthenticated_menu.html").read()
         
         secrets_file=open("/home/ec2-user/secrets.txt")
 
@@ -105,29 +114,8 @@ class Root(object):
             is_mobile = True
 
         if not is_session_authenticated():
-            
-            if is_mobile:
 
-                html_string = """
-<html>
-<head>
-{0}
-</head>
-<body>
-<center><h1>A Neutral Platform </h1></center>
-<center><h2>A social media platform that does not censor</h2></center>
-{1}
-<br>
-{2}
-<br>
-<center>This website is experimental at this point. You should expect bugs, unexpected downtime, etc. Please contact nplat.feedback@gmail.com for comments, feature requests, etc.</center>
-</body>
-</html>
-""".format(gtag,users_string,posts_string)
-            
-            else:    
-
-                html_string = """
+            desktop_html_string = """
 <html>
 <head>
 {0}
@@ -177,7 +165,7 @@ margin:0px auto 0px auto;
 <h3>A neutral platform</h3>
 </div>
 <div class="nav">
-<a href="/">Home</a> / <a href="/auth/login">Login</a> / <a href="/register/">Register</a>
+{1}
 </div>
 </div>
 </header>
@@ -186,42 +174,234 @@ margin:0px auto 0px auto;
 <br><br><br>
 <center><h1>A social media platform that does not censor</h1></center>
 <br>
-{1}
-<br>
 {2}
 <br>
-<center>This website is experimental at this point. You should expect bugs, unexpected downtime, etc. Please contact nplat.feedback@gmail.com for comments, feature requests, etc.</center>
+{3}
+<br>
+<center>{4}</center>
 </div>
 </body>
 </html>
-""".format(gtag,users_string,posts_string)
+""".format(gtag_string,desktop_menu_string,users_string,posts_string,disclaimer_string)
+            
+            mobile_html_string = """
+<html>
+<head>
+{0}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+nav {{
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    transform: translate(-250px, 0);
+    transition: transform 0.3s ease;
+}}
+nav.open {{
+    transform: translate(0, 0);
+}}
+a#menu svg {{
+    width: 40px;
+    fill: #000;
+}}
+main {{
+    width: 100%;
+    height: 100%;
+}}
+html, body {{
+    height: 100%;
+    width: 100%;
+    margin-top:0;
+    margin-left:0;
+    margin-right:0;
+}}
+.header {{
+float : right
+}}
+.content {{
+padding-left:1em;
+padding-right:1em;
+}}
+</style>
+</head>
+<body>
+<nav id="drawer" style="background-color:LightGrey">
+<center><h2 style="margin-top:0">N-plat</h2></center>
+{1}
+</nav>
+<main>
+<a id="menu">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z" />
+  </svg>
+</a>
+<div class = "header">
+<h1 style="margin-top:0;margin-bottom:0">N-plat</h1>
+</div>
+<center><h1>A Neutral Platform </h1></center>
+<center><h2>A social media platform that does not censor</h2></center>
+{2}
+<br>
+{3}
+<br>
+<center>{4}</center>
+</main>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
+<script type="text/javascript">
+var menu = document.querySelector('#menu');
+var main = document.querySelector('main');
+var drawer = document.querySelector('#drawer');
+menu.addEventListener('click', function(e) {{
+    drawer.classList.toggle('open');
+    e.stopPropagation();
+}});
+main.addEventListener('click', function() {{
+    drawer.classList.remove('open');
+}});
+main.addEventListener('touchstart', function() {{
+    drawer.classList.remove('open');
+}});
+</script>
+</body>
+</html>
+""".format(gtag_string,mobile_menu_string,users_string,posts_string,disclaimer_string)
+            
+            if is_mobile:
+                html_string = mobile_html_string
+            else:
+                html_string = desktop_html_string
 
         else:
 
-            if is_mobile:
-                html_string = """
+            desktop_html_string = """
 <html>
 <head>
 {0}
+<meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
+
+<style>
+h1{{
+margin-top: 0.0em; 
+margin-bottom: 0.0em; 
+}} 
+
+h3{{
+margin-top: 0.0em; 
+}} 
+
+.header1 {{width:380px; float:left;}}
+
+.nav{{
+float: right;
+padding: 20px 0px 0px 0px;
+text-align: right;
+}}
+
+header{{ background-color: White}}
+
+header{{
+position:fixed;
+top:0px;
+left:0px;
+width:100%;
+height:60px;
+z-index:50;
+}}
+
+.page{{
+width:960px; 
+margin:0px auto 0px auto;
+}}
+</style>
+
 </head>
 <body>
-<center><h1>A Neutral Platform </h1></center>
-{0}
-<br>
+<header>
+<div class = "page">
+<div class="header1">
+<h1> N-plat </h1>
+<h3>A neutral platform</h3>
+</div>
+<div class="nav">
 {1}
+</div>
+</div>
+</header>
+<div class="nonheader">
+<div class="divider"></div>
+<br><br><br>
+<center><h1>A Neutral Platform</h1></center>
 <br>
-<center>This website is experimental at this point. You should expect bugs, unexpected downtime, etc. Please contact nplat.feedback@gmail.com for comments, feature requests, etc.</center>
+<center>
+<form id="post_form" method="post" action="post">
+<input type="text" id="text" name="text"/> <br><br>
+<button id="contact_request" class="fg-button ui-state-default ui-corner-all" type="submit">
+Submit
+</button>
+</form>
+</center>
+{2}
+<br>
+<center>{3}</center>
+</div>
 </body>
 </html>
-""".format(gtag,posts_string)
-                
-            else:
-                html_string = """
+""".format(gtag_string,desktop_menu_string,posts_string,disclaimer_string)
+
+            mobile_html_string = """
 <html>
 <head>
 {0}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+nav {{
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    transform: translate(-250px, 0);
+    transition: transform 0.3s ease;
+}}
+nav.open {{
+    transform: translate(0, 0);
+}}
+a#menu svg {{
+    width: 40px;
+    fill: #000;
+}}
+main {{
+    width: 100%;
+    height: 100%;
+}}
+html, body {{
+    height: 100%;
+    width: 100%;
+    margin-top:0;
+    margin-left:0;
+    margin-right:0;
+}}
+.header {{
+float : right
+}}
+.content {{
+padding-left:1em;
+padding-right:1em;
+}}
+</style>
 </head>
 <body>
+<nav id="drawer" style="background-color:LightGrey">
+<center><h2 style="margin-top:0">N-plat</h2></center>
+{1}
+</nav>
+<main>
+<a id="menu">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z" />
+  </svg>
+</a>
+<div class = "header">
+<h1 style="margin-top:0;margin-bottom:0">N-plat</h1>
+</div>
 <center><h1>A Neutral Platform </h1></center>
 <center>
 <form id="post_form" method="post" action="post">
@@ -231,20 +411,56 @@ Submit
 </button>
 </form>
 </center>
-{0}
+{2}
 <br>
-<center>This website is experimental at this point. You should expect bugs, unexpected downtime, etc. Please contact nplat.feedback@gmail.com for comments, feature requests, etc.</center>
+<center>{3}</center>
+</main>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
+<script type="text/javascript">
+var menu = document.querySelector('#menu');
+var main = document.querySelector('main');
+var drawer = document.querySelector('#drawer');
+menu.addEventListener('click', function(e) {{
+    drawer.classList.toggle('open');
+    e.stopPropagation();
+}});
+main.addEventListener('click', function() {{
+    drawer.classList.remove('open');
+}});
+main.addEventListener('touchstart', function() {{
+    drawer.classList.remove('open');
+}});
+</script>
 </body>
 </html>
-""".format(gtag,posts_string)
+""".format(gtag_string,mobile_menu_string,posts_string,disclaimer_string)
+            
+            if is_mobile:
+                html_string = mobile_html_string
+            else:
+                html_string = desktop_html_string
                 
         return html_string
 
     @cherrypy.expose
     def default(self, user):
 
-        gtag = open("gtag.js").read()
+        gtag_string = open("gtag.js").read()
+
+        disclaimer_string = open("disclaimer.html").read()
         
+        if is_session_authenticated():
+            desktop_menu_string = open("desktop_authenticated_menu.html").read()
+            mobile_menu_string = open("mobile_authenticated_menu.html").read()
+        else:
+            desktop_menu_string = open("desktop_unauthenticated_menu.html").read()
+            mobile_menu_string = open("mobile_unauthenticated_menu.html").read()
+        
+        is_mobile = False
+
+        if "User-Agent" in cherrypy.request.headers and ("Android" in cherrypy.request.headers['User-Agent'] or "iPhone" in cherrypy.request.headers['User-Agent'] or "iPad" in cherrypy.request.headers['User-Agent']):
+            is_mobile = True
+
         secrets_file=open("/home/ec2-user/secrets.txt")
 
         passwords=secrets_file.read().rstrip('\n')
@@ -272,33 +488,314 @@ Submit
                 name_string += "<h2>" + userinfo_dict["name"] + "</h2>\n<br>\n" 
             name_string += "</center>\n"
 
-            html_string = """
+            curs.execute("select * from posts where username = \""+user+"\" order by time desc;")
+            colnames = [desc[0] for desc in curs.description]
+            posts=curs.fetchall()
+
+            posts_string = "<center>\n"
+            for post in posts:
+                post_dict = dict(zip(colnames, post))
+                posts_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
+            posts_string += "<center>\n"
+
+            desktop_html_string = """
 <html>
 <head>
 {0}
+<meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
+
+<style>
+h1{{
+margin-top: 0.0em; 
+margin-bottom: 0.0em; 
+}} 
+
+h3{{
+margin-top: 0.0em; 
+}} 
+
+.header1 {{width:380px; float:left;}}
+
+.nav{{
+float: right;
+padding: 20px 0px 0px 0px;
+text-align: right;
+}}
+
+header{{ background-color: White}}
+
+header{{
+position:fixed;
+top:0px;
+left:0px;
+width:100%;
+height:60px;
+z-index:50;
+}}
+
+.page{{
+width:960px; 
+margin:0px auto 0px auto;
+}}
+</style>
+
 </head>
 <body>
-<center><h1>A Neutral Platform</h1></center>
-<center>This website is experimental at this point. You should expect bugs, unexpected downtime, etc. Please contact nplat.feedback@gmail.com for comments, feature requests, etc.</center>
+<header>
+<div class = "page">
+<div class="header1">
+<h1> N-plat </h1>
+<h3>A neutral platform</h3>
+</div>
+<div class="nav">
+{1}
+</div>
+</div>
+</header>
+<div class="nonheader">
+<div class="divider"></div>
+<br><br><br>
+<center><h1>A social media platform that does not censor</h1></center>
+<br>
+<center>{2}</center>
+<br>
+<center>{3}</center>
+</div>
 </body>
 </html>
-""".format(gtag)
+""".format(gtag_string,desktop_menu_string,posts_string,disclaimer_string)
+
+            mobile_html_string = """
+<html>
+<head>
+{0}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+nav {{
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    transform: translate(-250px, 0);
+    transition: transform 0.3s ease;
+}}
+nav.open {{
+    transform: translate(0, 0);
+}}
+a#menu svg {{
+    width: 40px;
+    fill: #000;
+}}
+main {{
+    width: 100%;
+    height: 100%;
+}}
+html, body {{
+    height: 100%;
+    width: 100%;
+    margin-top:0;
+    margin-left:0;
+    margin-right:0;
+}}
+.header {{
+float : right
+}}
+.content {{
+padding-left:1em;
+padding-right:1em;
+}}
+</style>
+</head>
+<body>
+<nav id="drawer" style="background-color:LightGrey">
+<center><h2 style="margin-top:0">N-plat</h2></center>
+{1}
+</nav>
+<main>
+<a id="menu">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z" />
+  </svg>
+</a>
+<div class = "header">
+<h1 style="margin-top:0;margin-bottom:0">N-plat</h1>
+</div>
+<br>
+<center>{2}</center>
+<br>
+<center>{3}</center>
+</main>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
+<script type="text/javascript">
+var menu = document.querySelector('#menu');
+var main = document.querySelector('main');
+var drawer = document.querySelector('#drawer');
+menu.addEventListener('click', function(e) {{
+    drawer.classList.toggle('open');
+    e.stopPropagation();
+}});
+main.addEventListener('click', function() {{
+    drawer.classList.remove('open');
+}});
+main.addEventListener('touchstart', function() {{
+    drawer.classList.remove('open');
+}});
+</script>
+</body>
+</html>
+""".format(gtag_string,mobile_menu_string,posts_string,disclaimer_string)
             
         else:    
-            html_string = """
+            desktop_html_string = """
 <html>
 <head>
 {0}
+<meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
+
+<style>
+h1{{
+margin-top: 0.0em; 
+margin-bottom: 0.0em; 
+}} 
+
+h3{{
+margin-top: 0.0em; 
+}} 
+
+.header1 {{width:380px; float:left;}}
+
+.nav{{
+float: right;
+padding: 20px 0px 0px 0px;
+text-align: right;
+}}
+
+header{{ background-color: White}}
+
+header{{
+position:fixed;
+top:0px;
+left:0px;
+width:100%;
+height:60px;
+z-index:50;
+}}
+
+.page{{
+width:960px; 
+margin:0px auto 0px auto;
+}}
+</style>
+
 </head>
 <body>
-<center><h1>A Neutral Platform</h1></center>
+<header>
+<div class = "page">
+<div class="header1">
+<h1> N-plat </h1>
+<h3>A neutral platform</h3>
+</div>
+<div class="nav">
+{1}
+</div>
+</div>
+</header>
+<div class="nonheader">
+<div class="divider"></div>
+<br><br><br>
+<center><h1>A social media platform that does not censor</h1></center>
+<br>
 <center>Username not found</center>
-<br><br>
-<center>This website is experimental at this point. You should expect bugs, unexpected downtime, etc. Please contact nplat.feedback@gmail.com for comments, feature requests, etc.</center>
+<br>
+<center>{2}</center>
+</div>
 </body>
 </html>
-""".format(gtag)
+""".format(gtag_string,desktop_menu_string,disclaimer_string)
 
+            mobile_html_string = """
+<html>
+<head>
+{0}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+nav {{
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    transform: translate(-250px, 0);
+    transition: transform 0.3s ease;
+}}
+nav.open {{
+    transform: translate(0, 0);
+}}
+a#menu svg {{
+    width: 40px;
+    fill: #000;
+}}
+main {{
+    width: 100%;
+    height: 100%;
+}}
+html, body {{
+    height: 100%;
+    width: 100%;
+    margin-top:0;
+    margin-left:0;
+    margin-right:0;
+}}
+.header {{
+float : right
+}}
+.content {{
+padding-left:1em;
+padding-right:1em;
+}}
+</style>
+</head>
+<body>
+<nav id="drawer" style="background-color:LightGrey">
+<center><h2 style="margin-top:0">N-plat</h2></center>
+{1}
+</nav>
+<main>
+<a id="menu">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z" />
+  </svg>
+</a>
+<div class = "header">
+<h1 style="margin-top:0;margin-bottom:0">N-plat</h1>
+</div>
+<br>
+<center>Username not found</center>
+<br>
+<center>{2}</center>
+</main>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
+<script type="text/javascript">
+var menu = document.querySelector('#menu');
+var main = document.querySelector('main');
+var drawer = document.querySelector('#drawer');
+menu.addEventListener('click', function(e) {{
+    drawer.classList.toggle('open');
+    e.stopPropagation();
+}});
+main.addEventListener('click', function() {{
+    drawer.classList.remove('open');
+}});
+main.addEventListener('touchstart', function() {{
+    drawer.classList.remove('open');
+}});
+</script>
+</body>
+</html>
+""".format(gtag_string,mobile_menu_string,disclaimer_string)
+
+        if is_mobile:
+            html_string = mobile_html_string
+        else:
+            html_string = desktop_html_string 
+            
         return html_string
 
     @cherrypy.expose

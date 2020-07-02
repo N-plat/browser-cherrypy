@@ -14,20 +14,166 @@ import utils
 
 import json
 
-#"""+(html_strings.authenticated_header if utils.is_session_authenticated() else html_strings.not_authenticated_header)+"""
+from auth import is_session_authenticated
 
 class Register(object):
     @cherrypy.expose
     def index(self):
 
-        gtag = open("gtag.js").read()
+        gtag_string = open("gtag.js").read()
+
+        disclaimer_string = open("disclaimer.html").read()
+
+        if is_session_authenticated():
+            desktop_menu_string = open("desktop_authenticated_menu.html").read()
+            mobile_menu_string = open("mobile_authenticated_menu.html").read()
+        else:
+            desktop_menu_string = open("desktop_unauthenticated_menu.html").read()
+            mobile_menu_string = open("mobile_unauthenticated_menu.html").read()
         
-        return """
+        is_mobile = False
+        
+        if "User-Agent" in cherrypy.request.headers and ("Android" in cherrypy.request.headers['User-Agent'] or "iPhone" in cherrypy.request.headers['User-Agent'] or "iPad" in cherrypy.request.headers['User-Agent']):
+            is_mobile = True
+
+        desktop_html_string = """
 <html>
 <head>
 {0}
+<meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
+
+<style>
+h1{{
+margin-top: 0.0em; 
+margin-bottom: 0.0em; 
+}} 
+
+h3{{
+margin-top: 0.0em; 
+}} 
+
+.header1 {{width:380px; float:left;}}
+
+.nav{{
+float: right;
+padding: 20px 0px 0px 0px;
+text-align: right;
+}}
+
+header{{ background-color: White}}
+
+header{{
+position:fixed;
+top:0px;
+left:0px;
+width:100%;
+height:60px;
+z-index:50;
+}}
+
+.page{{
+width:960px; 
+margin:0px auto 0px auto;
+}}
+</style>
+
 </head>
 <body>
+<header>
+<div class = "page">
+<div class="header1">
+<h1> N-plat </h1>
+<h3>A neutral platform</h3>
+</div>
+<div class="nav">
+{1}
+</div>
+</div>
+</header>
+<div class="nonheader">
+<div class="divider"></div>
+<br><br><br>
+<center><h2>Registration</h2></center>
+<center>N-plat is a social media website like Twitter or Facebook, except that it does not censor content. Currently only text is supported, but we will hopefully add photos and videos soon. All information posted is viewable by anyone on the open internet, and there is no way to delete anything. There is no way to recover lost passwords right now. Please contact nplat.feedback@gmail.com for comments, feature requests, etc. </center><br><br>
+<center>
+   <form id="register_form" target="console_iframe" method="post" action="register">
+   username: * <br><br>
+   <input type="text" id="username" name="username" size="18" /><br><br>
+   password: * <br><br>
+   <input type="password" id="password" name="password" size="18" /> <br><br>
+   name: <br><br>
+   <input type="text" id="name" name="name" size="18" /><br><br>
+
+<b>By clicking the "Register" button, you agree that you have read and understand the above description of what N-plat is.</b> 
+
+<br> <br>
+
+  <button id="register" type="submit">
+  Register
+  </button>
+  </form>
+  <iframe name="console_iframe" id ="console_iframe" class="terminal" /></iframe>
+</center>
+<br><br>
+<center>{2}</center>
+</body>
+</html>
+""".format(gtag_string,desktop_menu_string,disclaimer_string)
+            
+        mobile_html_string = """
+<html>
+<head>
+{0}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+nav {{
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    transform: translate(-250px, 0);
+    transition: transform 0.3s ease;
+}}
+nav.open {{
+    transform: translate(0, 0);
+}}
+a#menu svg {{
+    width: 40px;
+    fill: #000;
+}}
+main {{
+    width: 100%;
+    height: 100%;
+}}
+html, body {{
+    height: 100%;
+    width: 100%;
+    margin-top:0;
+    margin-left:0;
+    margin-right:0;
+}}
+.header {{
+float : right
+}}
+.content {{
+padding-left:1em;
+padding-right:1em;
+}}
+</style>
+</head>
+<body>
+<nav id="drawer" style="background-color:LightGrey">
+<center><h2 style="margin-top:0">N-plat</h2></center>
+{1}
+</nav>
+<main>
+<a id="menu">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z" />
+  </svg>
+</a>
+<div class = "header">
+<h1 style="margin-top:0;margin-bottom:0">N-plat</h1>
+</div>
 <center><h1>A Neutral Platform</h1></center>
 <center><h2>Registration</h2></center>
 <center>N-plat is a social media website like Twitter or Facebook, except that it does not censor content. Currently only text is supported, but we will hopefully add photos and videos soon. All information posted is viewable by anyone on the open internet, and there is no way to delete anything. There is no way to recover lost passwords right now. Please contact nplat.feedback@gmail.com for comments, feature requests, etc. </center><br><br>
@@ -51,12 +197,34 @@ class Register(object):
   <iframe name="console_iframe" id ="console_iframe" class="terminal" /></iframe>
 </center>
 <br><br>
-<center>This website is experimental at this point. You should expect bugs, unexpected downtime, etc. Please contact nplat.feedback@gmail.com for comments, feature requests, etc.</center>
+<center>{2}</center>
+</main>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
+<script type="text/javascript">
+var menu = document.querySelector('#menu');
+var main = document.querySelector('main');
+var drawer = document.querySelector('#drawer');
+menu.addEventListener('click', function(e) {{
+    drawer.classList.toggle('open');
+    e.stopPropagation();
+}});
+main.addEventListener('click', function() {{
+    drawer.classList.remove('open');
+}});
+main.addEventListener('touchstart', function() {{
+    drawer.classList.remove('open');
+}});
+</script>
 </body>
 </html>
-""".format(gtag)
-
-
+""".format(gtag_string,mobile_menu_string,disclaimer_string)
+        
+        if is_mobile:
+            html_string = mobile_html_string
+        else:
+            html_string = desktop_html_string
+        
+        return html_string
 
     @cherrypy.expose
     def register(self, username, password,name):
@@ -176,6 +344,13 @@ class Register(object):
                 os.system("rm /home/ec2-user/registering_someone");
                 print json.dumps(json_object)
                 return json.dumps(json_object)
+
+            if username == "auth" or username == "register":
+                json_object["success"] = False
+                json_object["errors"].append("Invalid username.")
+                os.system("rm /home/ec2-user/registering_someone");
+                print json.dumps(json_object)
+                return json.dumps(json_object)            
             
             curs.execute("insert into user_info set username = \""+username+"\", hashed_password = \""+h.hexdigest()+"\", name = \""+name+"\", registration_time = now(6)")
 
@@ -190,3 +365,5 @@ class Register(object):
             return json.dumps(json_object)
 
         return register_function()
+
+
