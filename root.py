@@ -172,7 +172,7 @@ margin:0px auto 0px auto;
 <div class="nonheader">
 <div class="divider"></div>
 <br><br><br>
-<center><h1>A social media platform that does not censor</h1></center>
+<center><h1>A Neutral Platform</h1></center>
 <br>
 {2}
 <br>
@@ -239,7 +239,6 @@ padding-right:1em;
 <h1 style="margin-top:0;margin-bottom:0">N-plat</h1>
 </div>
 <center><h1>A Neutral Platform </h1></center>
-<center><h2>A social media platform that does not censor</h2></center>
 {2}
 <br>
 {3}
@@ -555,7 +554,7 @@ margin:0px auto 0px auto;
 <div class="nonheader">
 <div class="divider"></div>
 <br><br><br>
-<center><h1>A social media platform that does not censor</h1></center>
+<center><h1>A Neutral Platform</h1></center>
 <br>
 <center>{2}</center>
 <br>
@@ -702,7 +701,7 @@ margin:0px auto 0px auto;
 <div class="nonheader">
 <div class="divider"></div>
 <br><br><br>
-<center><h1>A social media platform that does not censor</h1></center>
+<center><h1>A Neutral Platform</h1></center>
 <br>
 <center>Username not found</center>
 <br>
