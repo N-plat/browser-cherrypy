@@ -24,6 +24,8 @@ if __name__ == '__main__':
 
 { 
 
+'/robots.txt': { 'tools.staticfile.on': True, 'tools.staticfile.filename': '/home/ec2-user/server/robots.txt'  }
+    
 }
 
  )
