@@ -41,7 +41,20 @@ class Register(object):
 <head>
 {0}
 <meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
-
+<script>
+function gtag_report_conversion(url) {{
+  var callback = function () {{
+    if (typeof(url) != 'undefined') {{
+      window.location = url;
+    }}
+  }};
+  gtag('event', 'conversion', {{
+      'send_to': 'AW-826915775/weUoCOmn1HoQv_emigM',
+      'event_callback': callback
+  }});
+  return false;
+}}
+</script>
 <style>
 h1{{
 margin-top: 0.0em; 
@@ -117,6 +130,39 @@ margin:0px auto 0px auto;
 <br><br>
 <center>{2}</center>
 </body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
+  <script type="text/javascript">
+$('#register_form').submit(function(event) {{
+   event.preventDefault();
+   var $this = $(this);
+   $.ajax({{
+      url: $this.attr('action'),
+      type: 'POST',
+      data: $this.serialize(),
+      success: function(data){{
+        json_object = JSON.parse(data)
+        if (json_object["success"]) {{
+            var console_iframe = document.getElementById('console_iframe');
+            console_iframe.contentWindow.document.open();
+            console_iframe.contentWindow.document.close();
+            $('#register_form').hide();
+            console_iframe.contentWindow.document.write('<head><base target="_parent"></head><center style="color:blue;font-size:20px;font-weight:bold">Registration was successful.<br>You can now <a href="/auth/login/">login</a>.</center>');
+            gtag_report_conversion();
+        }}
+        else {{
+            var console_iframe = document.getElementById('console_iframe');
+            console_iframe.contentWindow.document.open();
+            console_iframe.contentWindow.document.close();
+            console_iframe.contentWindow.document.write('<center style="color:red;font-size:20px;font-weight:bold;white-space:pre-wrap">'+json_object["errors"]+'</center>');
+        }}
+      }},
+      error : function (data) {{
+        var console_iframe = document.getElementById('console_iframe');
+        console_iframe.write("Error.");
+      }}
+   }});
+}});
+</script>        
 </html>
 """.format(gtag_string,desktop_menu_string,disclaimer_string)
             
@@ -125,6 +171,20 @@ margin:0px auto 0px auto;
 <head>
 {0}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+function gtag_report_conversion(url) {{
+  var callback = function () {{
+    if (typeof(url) != 'undefined') {{
+      window.location = url;
+    }}
+  }};
+  gtag('event', 'conversion', {{
+      'send_to': 'AW-826915775/weUoCOmn1HoQv_emigM',
+      'event_callback': callback
+  }});
+  return false;
+}}
+</script>
 <style>
 nav {{
     width: 250px;
@@ -199,6 +259,7 @@ padding-right:1em;
 <br><br>
 <center>{2}</center>
 </main>
+</body>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
 <script type="text/javascript">
 var menu = document.querySelector('#menu');
@@ -214,8 +275,39 @@ main.addEventListener('click', function() {{
 main.addEventListener('touchstart', function() {{
     drawer.classList.remove('open');
 }});
-</script>
-</body>
+$('#register_form').submit(function(event) {{
+   event.preventDefault();
+   var $this = $(this);
+   $.ajax({{
+      url: $this.attr('action'),
+      type: 'POST',
+      data: $this.serialize(),
+      success: function(data){{
+        json_object = JSON.parse(data)
+        if (json_object["success"]) {{
+            var console_iframe = document.getElementById('console_iframe');
+            console_iframe.contentWindow.document.open();
+            console_iframe.contentWindow.document.close();
+            $('#register_form').hide();
+            console_iframe.contentWindow.document.write('<head><base target="_parent"></head><center style="color:blue;font-size:20px;font-weight:bold">Registration was successful.<br>You can now <a href="/auth/login/">login</a>.</center>');
+            gtag_report_conversion();
+        }}
+        else {{
+            var console_iframe = document.getElementById('console_iframe');
+            console_iframe.contentWindow.document.open();
+            console_iframe.contentWindow.document.close();
+            console_iframe.contentWindow.document.write('<center style="color:red;font-size:20px;font-weight:bold;white-space:pre-wrap">'+json_object["errors"]+'</center>');
+        }}
+      }},
+      error : function (data) {{
+        alert(data);
+        var console_iframe = document.getElementById('console_iframe');
+        console_iframe.write("Error.");
+      }}
+   }});
+}});
+</script>    
+
 </html>
 """.format(gtag_string,mobile_menu_string,disclaimer_string)
         
