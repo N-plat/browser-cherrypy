@@ -120,7 +120,9 @@ class Root(object):
 <head>
 {0}
 <meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
-
+<title>
+N-plat
+</title>
 <style>
 h1{{
 margin-top: 0.0em; 
@@ -189,6 +191,9 @@ margin:0px auto 0px auto;
 <head>
 {0}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+N-plat
+</title>
 <style>
 nav {{
     width: 250px;
@@ -277,7 +282,9 @@ main.addEventListener('touchstart', function() {{
 <head>
 {0}
 <meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
-
+<title>
+N-plat
+</title>
 <style>
 h1{{
 margin-top: 0.0em; 
@@ -352,6 +359,9 @@ Submit
 <head>
 {0}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+N-plat
+</title>
 <style>
 nav {{
     width: 250px;
@@ -491,18 +501,23 @@ main.addEventListener('touchstart', function() {{
             colnames = [desc[0] for desc in curs.description]
             posts=curs.fetchall()
 
-            posts_string = "<center>\n"
-            for post in posts:
-                post_dict = dict(zip(colnames, post))
-                posts_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
-            posts_string += "<center>\n"
+            if len(posts) != 0:
+                posts_string = "<center>\n"
+                for post in posts:
+                    post_dict = dict(zip(colnames, post))
+                    posts_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
+                posts_string += "<center>\n"
+            else:
+                posts_string="<center><i>"+user+" has not posted anything yet</i></center>"
 
             desktop_html_string = """
 <html>
 <head>
 {0}
 <meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
-
+<title>
+N-plat
+</title>
 <style>
 h1{{
 margin-top: 0.0em; 
@@ -569,6 +584,9 @@ margin:0px auto 0px auto;
 <head>
 {0}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+N-plat
+</title>
 <style>
 nav {{
     width: 250px;
@@ -649,7 +667,9 @@ main.addEventListener('touchstart', function() {{
 <head>
 {0}
 <meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
-
+<title>
+N-plat
+</title>
 <style>
 h1{{
 margin-top: 0.0em; 
@@ -716,6 +736,9 @@ margin:0px auto 0px auto;
 <head>
 {0}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+N-plat
+</title>
 <style>
 nav {{
     width: 250px;
