@@ -83,7 +83,9 @@ class Authenticate(object):
 <head>
 {0}
 <meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
-
+<title>
+N-plat
+</title>
 <style>
 h1{{
 margin-top: 0.0em; 
@@ -161,6 +163,9 @@ Login
 <head>
 {0}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+N-plat
+</title>
 <style>
 nav {{
     width: 250px;

@@ -41,6 +41,9 @@ class Register(object):
 <head>
 {0}
 <meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
+<title>
+N-plat
+</title>
 <script>
 function gtag_report_conversion(url) {{
   var callback = function () {{
@@ -171,6 +174,9 @@ $('#register_form').submit(function(event) {{
 <head>
 {0}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+N-plat
+</title>
 <script>
 function gtag_report_conversion(url) {{
   var callback = function () {{
