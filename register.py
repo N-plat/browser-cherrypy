@@ -113,6 +113,8 @@ margin:0px auto 0px auto;
 <center>N-plat is a social media website like Twitter or Facebook, except that it does not censor content. Currently only text is supported, but we will hopefully add photos and videos soon. All information posted is viewable by anyone on the open internet, and there is no way to delete anything. There is no way to recover lost passwords right now. Please contact nplat.feedback@gmail.com for comments, feature requests, etc. </center><br><br>
 <center>
    <form id="register_form" target="console_iframe" method="post" action="register">
+   e-mail address: * <br><br>
+   <input type="text" id="email" name="email" size="30" /><br><br>
    username: * <br><br>
    <input type="text" id="username" name="username" size="18" /><br><br>
    password: * <br><br>
@@ -245,6 +247,8 @@ padding-right:1em;
 <center>N-plat is a social media website like Twitter or Facebook, except that it does not censor content. Currently only text is supported, but we will hopefully add photos and videos soon. All information posted is viewable by anyone on the open internet, and there is no way to delete anything. There is no way to recover lost passwords right now. Please contact nplat.feedback@gmail.com for comments, feature requests, etc. </center><br><br>
 <center>
    <form id="register_form" target="console_iframe" method="post" action="register">
+   e-mail address: * <br><br>
+   <input type="text" id="email" name="email" size="30" /><br><br>
    username: * <br><br>
    <input type="text" id="username" name="username" size="18" /><br><br>
    password: * <br><br>
@@ -325,7 +329,7 @@ $('#register_form').submit(function(event) {{
         return html_string
 
     @cherrypy.expose
-    def register(self, username, password,name):
+    def register(self, email, username, password,name):
 
         print "len(username): "+str(len(username))
         print "username.encode('utf-8'): "+username.encode('utf-8')
@@ -333,6 +337,9 @@ $('#register_form').submit(function(event) {{
         print "len(password): "+str(len(password))
         print "name.encode('utf-8'): "+name.encode('utf-8')
         print "name: "+name
+        print "len(email): "+str(len(email))
+        print "email.encode('utf-8'): "+email.encode('utf-8')
+        print "email: "+email
 
 #        $( "iframe" ).clear()
         def register_function():
@@ -343,6 +350,51 @@ $('#register_form').submit(function(event) {{
 
             json_object["errors"] = []
 
+            if len(email) == 0:
+                json_object["success"] = False
+                json_object["errors"].append("E-mail address is empty.")
+                print json.dumps(json_object)
+                return json.dumps(json_object)
+
+            if len(email) > 100:
+                json_object["success"] = False
+                json_object["errors"].append("E-mail address is too long.")
+                print json.dumps(json_object)
+                return json.dumps(json_object)            
+
+            if len(email.strip(" ")) == 0:
+                json_object["success"] = False
+                json_object["errors"].append("Empty spaces are not allowed in the e-mail address. The e-mail address that you entered is \""+username+"\".")
+                print json.dumps(json_object)
+                return json.dumps(json_object)
+            
+            if email[0] == " ":
+                json_object["success"] = False
+                json_object["errors"].append("Empty spaces are not allowed in the e-mail address. The e-mail address that you entered is \""+email+"\". There are one or more empty spaces at the beginning.")
+                print json.dumps(json_object)
+                return json.dumps(json_object)
+
+            for c in email.rstrip(" "):
+                if c != 'a' and c != 'b' and c != 'c' and c != 'd' and c != 'e' and c != 'f' and c != 'g' and c != 'h' and c != 'i' and c != 'j' and c != 'k' and c != 'l' and c != 'm' and c != 'n' and c != 'o' and c != 'p' and c != 'q' and c != 'r' and c != 's' and c != 't' and c != 'u' and c != 'v' and c != 'w' and c != 'x' and c != 'y' and c != 'z' and c != 'A' and c != 'B' and c != 'C' and c != 'D' and c != 'E' and c != 'F' and c != 'G' and c != 'H' and c != 'I' and c != 'J' and c != 'K' and c != 'L' and c != 'M' and c != 'N' and c != 'O' and c != 'P' and c != 'Q' and c != 'R' and c != 'S' and c != 'T' and c != 'U' and c != 'V' and c != 'W' and c != 'X' and c != 'Y' and c != 'Z' and c != '0' and c != '1' and c != '2' and c != '3' and c != '4' and c != '5' and c != '6' and c != '7' and c != '8' and c != '9' and c != '_' and c != '-' and c != '.' and c != "@":
+                    json_object["success"] = False
+
+                    if c == " ":
+                        json_object["errors"].append("Empty spaces are not allowed in the e-mail address.")
+                    elif c != '"' and c != "'":
+                        print "ord(c): "+str(ord(c))
+                        json_object["errors"].append('"' + c + '"' +" not allowed in e-mail address.")
+                    else:
+                        json_object["errors"].append(c +" not allowed in e-mail address.")
+                        
+                    print json.dumps(json_object)
+                    return json.dumps(json_object)
+
+            if len(email) != len(email.rstrip(" ")):
+                json_object["success"] = False
+                json_object["errors"].append("Empty spaces are not allowed in the e-mail address. The e-mail address that you entered is \""+email+"\". There are one or more empty spaces at the end.")
+                print json.dumps(json_object)
+                return json.dumps(json_object)
+                
             if len(username) > 30:
                 json_object["success"] = False
                 json_object["errors"].append("username too long")
@@ -435,6 +487,17 @@ $('#register_form').submit(function(event) {{
                 os.system("rm /home/ec2-user/registering_someone");
                 print json.dumps(json_object)
                 return json.dumps(json_object)
+
+            curs.execute("select * from user_info where email = \""+email+"\"")
+
+            user_infos = curs.fetchall()
+
+            if len(user_infos) > 0:
+                json_object["success"] = False
+                json_object["errors"].append("This e-mail address is already used.")
+                os.system("rm /home/ec2-user/registering_someone");
+                print json.dumps(json_object)
+                return json.dumps(json_object)
             
             if len(password) < 6:
                 json_object["success"] = False
@@ -450,7 +513,7 @@ $('#register_form').submit(function(event) {{
                 print json.dumps(json_object)
                 return json.dumps(json_object)            
             
-            curs.execute("insert into user_info set username = \""+username+"\", hashed_password = \""+h.hexdigest()+"\", name = \""+name+"\", registration_time = now(6)")
+            curs.execute("insert into user_info set email = \""+email+"\", username = \""+username+"\", hashed_password = \""+h.hexdigest()+"\", name = \""+name+"\", registration_time = now(6)")
 
             conn.commit()
 
