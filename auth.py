@@ -78,70 +78,12 @@ class Authenticate(object):
         if "User-Agent" in cherrypy.request.headers and ("Android" in cherrypy.request.headers['User-Agent'] or "iPhone" in cherrypy.request.headers['User-Agent'] or "iPad" in cherrypy.request.headers['User-Agent']):
             is_mobile = True
 
-        desktop_html_string = """
-<html>
-<head>
-{0}
-<meta name="google-site-verification" content="E6TUNugyrurnOh1poUxBpXfMFPwITmtF8gcpgZxZXFM" />
-<title>
-N-plat
-</title>
-<style>
-h1{{
-margin-top: 0.0em; 
-margin-bottom: 0.0em; 
-}} 
-
-h3{{
-margin-top: 0.0em; 
-}} 
-
-.header1 {{width:380px; float:left;}}
-
-.nav{{
-float: right;
-padding: 20px 0px 0px 0px;
-text-align: right;
-}}
-
-header{{ background-color: White}}
-
-header{{
-position:fixed;
-top:0px;
-left:0px;
-width:100%;
-height:60px;
-z-index:50;
-}}
-
-.page{{
-width:960px; 
-margin:0px auto 0px auto;
-}}
-</style>
-
-</head>
-<body>
-<header>
-<div class = "page">
-<div class="header1">
-<h1> N-plat </h1>
-<h3>A neutral platform</h3>
-</div>
-<div class="nav">
-{1}
-</div>
-</div>
-</header>
-<div class="nonheader">
-<div class="divider"></div>
-<br><br><br>
+        body_string = """
 <center><h2>Login</h2></center>
 <center>Register <a href="/register/">here</a> before logging in.</center><br><br>
 <center>
 <form method="post" action="/auth/login">
-<input type="hidden" name="from_page" value="{2}" />
+<input type="hidden" name="from_page" value="{0}" />
 username: <br><br>
 <input type="text" id="username" name="username" size="18" /><br><br>
 password: <br><br>
@@ -149,110 +91,28 @@ password: <br><br>
 <button type="submit">
 Login
 </button>
-</center
-<br><br>
-<center>{3}</center>
-<br>
-<center>{4}</center>
-</body>
-</html>
-""".format(gtag_string,desktop_menu_string,from_page,str(message),disclaimer_string)
-
-        mobile_html_string = """
-<html>
-<head>
-{0}
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>
-N-plat
-</title>
-<style>
-nav {{
-    width: 250px;
-    height: 100%;
-    position: fixed;
-    transform: translate(-250px, 0);
-    transition: transform 0.3s ease;
-}}
-nav.open {{
-    transform: translate(0, 0);
-}}
-a#menu svg {{
-    width: 40px;
-    fill: #000;
-}}
-main {{
-    width: 100%;
-    height: 100%;
-}}
-html, body {{
-    height: 100%;
-    width: 100%;
-    margin-top:0;
-    margin-left:0;
-    margin-right:0;
-}}
-.header {{
-float : right
-}}
-.content {{
-padding-left:1em;
-padding-right:1em;
-}}
-</style>
-</head>
-<body>
-<nav id="drawer" style="background-color:LightGrey">
-<center><h2 style="margin-top:0">N-plat</h2></center>
-{1}
-</nav>
-<main>
-<a id="menu">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z" />
-  </svg>
-</a>
-<div class = "header">
-<h1 style="margin-top:0;margin-bottom:0">N-plat</h1>
-</div>
-<center><h1>A Neutral Platform</h1></center>
-<center>
-<div style = "font-size:120%">Register <a href="/register/">here</a> before logging in.</div><br>
-<form method="post" action="/auth/login">
-<input type="hidden" name="from_page" value="{2}" />
-<div style = "font-size:120%">username:</div><br>
-<input type="text" id="username" name="username" size="18" /><br><br>
-<div style = "font-size:120%">password:</div> <br>
-<input type="password" id="password" name="password" size="18" /> <br><br>
-<button type="submit">
-Login
-</button>
-<br><br>
-{3}
 </center>
+<br><br>
+<center>{1}</center>
 <br>
-<center>{4}</center>
-</main>
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
-<script type="text/javascript">
-var menu = document.querySelector('#menu');
-var main = document.querySelector('main');
-var drawer = document.querySelector('#drawer');
-menu.addEventListener('click', function(e) {{
-    drawer.classList.toggle('open');
-    e.stopPropagation();
-}});
-main.addEventListener('click', function() {{
-    drawer.classList.remove('open');
-}});
-main.addEventListener('touchstart', function() {{
-    drawer.classList.remove('open');
-}});
-</script>
-</body>
-</html>
-""".format(gtag_string,mobile_menu_string,from_page,str(message),disclaimer_string)
+""".format(from_page,str(message))
 
+        desktop_html_string = open("desktop.html").read()    
+
+        desktop_html_string = desktop_html_string.format(
+            a=gtag_string,
+            b=desktop_menu_string,
+            c=body_string,
+            d=disclaimer_string)
+
+        mobile_html_string = open("mobile.html").read()    
+
+        mobile_html_string = mobile_html_string.format(
+            a=gtag_string,
+            b=mobile_menu_string,
+            c=body_string,
+            d=disclaimer_string)        
+        
         if is_mobile:
             html_string = mobile_html_string
         else:
