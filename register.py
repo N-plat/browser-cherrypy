@@ -36,8 +36,6 @@ class Register(object):
         if "User-Agent" in cherrypy.request.headers and ("Android" in cherrypy.request.headers['User-Agent'] or "iPhone" in cherrypy.request.headers['User-Agent'] or "iPad" in cherrypy.request.headers['User-Agent']):
             is_mobile = True
 
-            
-            
         body_string = """<center><h2>Registration</h2></center>
 <center>N-plat is a social media website like Twitter or Facebook, except that it does not censor content. Currently only text is supported, but we will hopefully add photos and videos soon. All information posted is viewable by anyone on the open internet, and there is no way to delete anything. There is no way to recover lost passwords right now. Please contact nplat.feedback@gmail.com for comments, feature requests, etc. </center><br><br>
 <center>
@@ -101,17 +99,19 @@ $('#register_form').submit(function(event) {{
         
         desktop_html_string = desktop_html_string.format(
             a=gtag_string,
-            b=desktop_menu_string,
-            c=body_string,
-            d=disclaimer_string)
+            b="",
+            c=desktop_menu_string,
+            d=body_string,
+            e=disclaimer_string)
 
         mobile_html_string = open("mobile.html").read()
 
         mobile_html_string = mobile_html_string.format(
             a=gtag_string,
-            b=mobile_menu_string,
-            c=body_string,
-            d=disclaimer_string)
+            b="",
+            c=mobile_menu_string,
+            d=body_string,
+            e=disclaimer_string)
         
         if is_mobile:
             html_string = mobile_html_string

@@ -97,21 +97,39 @@ Login
 <br>
 """.format(from_page,str(message))
 
+        gtag_report_conversion_function_string="""<script>	
+function gtag_report_conversion(url) {{	
+  var callback = function () {{	
+    if (typeof(url) != 'undefined') {{	
+      window.location = url;	
+    }}	
+  }};	
+  gtag('event', 'conversion', {{	
+      'send_to': 'AW-826915775/weUoCOmn1HoQv_emigM',	
+      'event_callback': callback	
+  }});	
+  return false;	
+}}	
+</script>
+"""
+        
         desktop_html_string = open("desktop.html").read()    
 
         desktop_html_string = desktop_html_string.format(
             a=gtag_string,
-            b=desktop_menu_string,
-            c=body_string,
-            d=disclaimer_string)
+            b=gtag_report_conversion_function_string,
+            c=desktop_menu_string,
+            d=body_string,
+            e=disclaimer_string)
 
         mobile_html_string = open("mobile.html").read()    
 
         mobile_html_string = mobile_html_string.format(
             a=gtag_string,
-            b=mobile_menu_string,
-            c=body_string,
-            d=disclaimer_string)        
+            b=gtag_report_conversion_function_string,
+            c=mobile_menu_string,
+            d=body_string,
+            e=disclaimer_string)        
         
         if is_mobile:
             html_string = mobile_html_string

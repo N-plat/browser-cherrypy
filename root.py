@@ -116,17 +116,19 @@ class Root(object):
             
             desktop_html_string = desktop_html_string.format(
                 a=gtag_string,
-                b=desktop_menu_string,
-                c=body_string,
-                d=disclaimer_string)
+                b="",
+                c=desktop_menu_string,
+                d=body_string,
+                e=disclaimer_string)
 
             mobile_html_string = open("mobile.html").read()
             
             mobile_html_string=mobile_html_string.format(
                 a=gtag_string,
-                b=mobile_menu_string,
-                c=body_string,
-                d=disclaimer_string)
+                b="",
+                c=mobile_menu_string,
+                d=body_string,
+                e=disclaimer_string)
             
             if is_mobile:
                 html_string = mobile_html_string
@@ -170,17 +172,19 @@ class Root(object):
             
             desktop_html_string=desktop_html_string.format(
                 a=gtag_string,
-                b=desktop_menu_string,
-                c=body_string,
-                d=disclaimer_string)
+                b="",
+                c=desktop_menu_string,
+                d=body_string,
+                e=disclaimer_string)
 
             mobile_html_string = open("mobile.html").read()
             
             mobile_html_string = mobile_html_string.format(
                 a=gtag_string,
-                b=mobile_menu_string,
-                c=body_string,
-                d=disclaimer_string)
+                b="",
+                c=mobile_menu_string,
+                d=body_string,
+                e=disclaimer_string)
             
             if is_mobile:
                 html_string = mobile_html_string
@@ -255,17 +259,19 @@ class Root(object):
                 
         desktop_html_string = desktop_html_string.format(
             a=gtag_string,
-            b=desktop_menu_string,
-            c=body_string,
-            d=disclaimer_string)
+            b="",
+            c=desktop_menu_string,
+            d=body_string,
+            e=disclaimer_string)
 
         mobile_html_string = open("mobile.html").read()
             
         mobile_html_string = mobile_html_string.format(
             a=gtag_string,
-            b=mobile_menu_string,
-            c=body_string,
-            d=disclaimer_string)
+            b="",
+            c=mobile_menu_string,
+            d=body_string,
+            e=disclaimer_string)
             
         if is_mobile:
             html_string = mobile_html_string
