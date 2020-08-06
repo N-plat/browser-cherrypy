@@ -1,6 +1,8 @@
 import MySQLdb
+
 import cherrypy
 
+import os
 #from view import View
 
 #from chat import Chat
@@ -8,6 +10,8 @@ import cherrypy
 from auth import Authenticate
 
 from register import Register
+
+from stream import Stream
 
 #from about import About
 
@@ -32,6 +36,8 @@ class Root(object):
 #    view = View()
 
 #    chat = Chat()
+
+    stream = Stream()
 
     auth = Authenticate()
 
@@ -110,6 +116,9 @@ class Root(object):
                 post_dict = dict(zip(colnames, post))
                 body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
 
+                if post_dict["video_unique_id"] != None:
+                    body_string += "<video width=\"640\" height=\"480\" controls>  <source src=\"/stream/?filename=video"+str(post_dict["video_unique_id"])+".mp4\" type=\"video/mp4\"></video><br>\n"
+
             body_string += "<center>\n"
             
             desktop_html_string = open("desktop.html").read()
@@ -152,7 +161,11 @@ class Root(object):
             conn.close()
             
             body_string = """<center>
-            <form id="post_form" method="post" action="post">
+            <form id="post_form" method="post" action="post" enctype="multipart/form-data">
+            <input type="file" id="video" name="video"/>
+            <br><br>
+            <input type="file" id="image" name="image"/>
+            <br><br>
             <input type="text" id="text" name="text"/> <br><br>
             <button id="contact_request" class="fg-button ui-state-default ui-corner-all" type="submit">
             Submit
@@ -281,9 +294,9 @@ class Root(object):
         return html_string
 
     @cherrypy.expose
-    def post(self, text):
+    def post(self, text, video, image):
 
-        print text
+        assert(len(image.filename) == 0 or len(video.filename) == 0)
         
         secrets_file=open("/home/ec2-user/secrets.txt")
 
@@ -293,14 +306,81 @@ class Root(object):
 
         dbname = "nplat"
 
-        conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
+        if len(image.filename) > 0:
 
-        curs = conn.cursor()
-
-        curs.execute("use "+dbname+";")
+            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
         
-        curs.execute("insert into posts set username = \""+cherrypy.session.get('_cp_username')+"\", text = \""+text.replace('"','\\\"').replace("'","\\\'")+"\", time=now(6)")
+            curs = conn.cursor()
+            curs.execute("use "+str(dbname)+";")
+            curs.execute("insert into images values(NULL,%s,now(6),now(6))", [cherrypy.session.get('_cp_username')])
+            conn.commit()
+        
+            curs.execute("SELECT LAST_INSERT_ID()")
+            conn.commit()
 
-        conn.commit()
+            image_unique_id = str(curs.fetchall()[0][0])
+        
+            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
 
-        conn.close()
+            curs = conn.cursor()
+
+            curs.execute("use "+dbname+";")
+
+            curs.execute("insert into posts set username = \""+cherrypy.session.get('_cp_username')+"\", text = \""+text.replace('"','\\\"').replace("'","\\\'")+"\", time=now(6)")
+
+            conn.commit()
+
+            conn.close()
+
+        elif len(video.filename) > 0:
+
+            tmp_filename=os.popen("mktemp").read().rstrip('\n')
+            open(tmp_filename,'wb').write(video.file.read());
+
+            output=os.popen("clamscan  --stdout --quiet "+tmp_filename+" 2>&1").read()
+
+            if len(output) > 0:
+                return
+
+            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
+        
+            curs = conn.cursor()
+            curs.execute("use "+str(dbname)+";")
+
+            curs.execute("insert into videos values(NULL,%s,now(6),now(6))", [cherrypy.session.get('_cp_username')])
+            conn.commit()
+        
+            curs.execute("SELECT LAST_INSERT_ID()")
+            conn.commit()
+
+            video_unique_id = str(curs.fetchall()[0][0])
+
+            os.system("mv "+tmp_filename+" /home/ec2-user/videos/video"+video_unique_id+".mp4")
+            
+            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
+
+            curs = conn.cursor()
+
+            curs.execute("use "+dbname+";")
+
+            curs.execute("insert into posts set username = \""+cherrypy.session.get('_cp_username')+"\", text = \""+text.replace('"','\\\"').replace("'","\\\'")+"\", time=now(6), video_unique_id = "+video_unique_id)
+
+            conn.commit()
+
+            conn.close()
+
+        else:
+
+            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
+
+            curs = conn.cursor()
+
+            curs.execute("use "+dbname+";")
+
+            curs.execute("insert into posts set username = \""+cherrypy.session.get('_cp_username')+"\", text = \""+text.replace('"','\\\"').replace("'","\\\'")+"\", time=now(6)")
+
+            conn.commit()
+
+            conn.close()
+
+            
