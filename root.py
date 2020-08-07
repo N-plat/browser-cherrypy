@@ -121,6 +121,9 @@ class Root(object):
                 if post_dict["video_unique_id"] != None:
                     body_string += "<video width=\"640\" height=\"480\" controls>  <source src=\"/stream/?filename=video"+str(post_dict["video_unique_id"])+".mp4\" type=\"video/mp4\"></video><br>\n"
 
+                if post_dict["image_unique_id"] != None:
+                    body_string += "<img src=\"/images/?filename=image"+str(post_dict["image_unique_id"])+".jpeg\"><br>\n"                    
+
             body_string += "<center>\n"
             
             desktop_html_string = open("desktop.html").read()
