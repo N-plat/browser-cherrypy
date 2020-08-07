@@ -13,6 +13,8 @@ from register import Register
 
 from stream import Stream
 
+from images import Images
+
 #from about import About
 
 #from emails import Email
@@ -38,6 +40,8 @@ class Root(object):
 #    chat = Chat()
 
     stream = Stream()
+
+    images = Images()    
 
     auth = Authenticate()
 
@@ -74,8 +78,6 @@ class Root(object):
         db_password = passwords.split('\n')[0]
         
         dbname = "nplat"
-
-
 
         is_mobile = False
 
@@ -308,6 +310,14 @@ class Root(object):
 
         if len(image.filename) > 0:
 
+            tmp_filename=os.popen("mktemp").read().rstrip('\n')
+            open(tmp_filename,'wb').write(image.file.read());
+
+            output=os.popen("clamscan  --stdout --quiet "+tmp_filename+" 2>&1").read()
+
+            if len(output) > 0:
+                return
+            
             conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
         
             curs = conn.cursor()
@@ -319,14 +329,16 @@ class Root(object):
             conn.commit()
 
             image_unique_id = str(curs.fetchall()[0][0])
-        
+
+            os.system("mv "+tmp_filename+" /home/ec2-user/images/image"+image_unique_id+".jpeg")
+            
             conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
 
             curs = conn.cursor()
 
             curs.execute("use "+dbname+";")
 
-            curs.execute("insert into posts set username = \""+cherrypy.session.get('_cp_username')+"\", text = \""+text.replace('"','\\\"').replace("'","\\\'")+"\", time=now(6)")
+            curs.execute("insert into posts set username = \""+cherrypy.session.get('_cp_username')+"\", text = \""+text.replace('"','\\\"').replace("'","\\\'")+"\", time=now(6), image_unique_id = "+image_unique_id)
 
             conn.commit()
 
