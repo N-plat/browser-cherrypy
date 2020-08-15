@@ -11,9 +11,9 @@ from auth import Authenticate
 
 from register import Register
 
-from stream import Stream
+#from stream import Stream
 
-from images import Images
+#from images import Images
 
 #from about import About
 
@@ -39,9 +39,9 @@ class Root(object):
 
 #    chat = Chat()
 
-    stream = Stream()
+#    stream = Stream()
 
-    images = Images()    
+#    images = Images()    
 
     auth = Authenticate()
 
@@ -119,10 +119,10 @@ class Root(object):
                 body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
 
                 if post_dict["video_unique_id"] != None:
-                    body_string += "<video width=\"640\" height=\"480\" controls>  <source src=\"/stream/?filename=video"+str(post_dict["video_unique_id"])+".mp4\" type=\"video/mp4\"></video><br>\n"
+                    body_string += "<video width=\"640\" height=\"480\" controls>  <source src=\"video.n-plat.com/?filename=video"+str(post_dict["video_unique_id"])+".mp4\" type=\"video/mp4\"></video><br>\n"
 
                 if post_dict["image_unique_id"] != None:
-                    body_string += "<img src=\"/images/?filename=image"+str(post_dict["image_unique_id"])+".jpeg\"><br>\n"                    
+                    body_string += "<img src=\"image.n-plat.com/?filename=image"+str(post_dict["image_unique_id"])+".jpeg\"><br>\n"                    
 
             body_string += "<center>\n"
             
@@ -333,7 +333,7 @@ class Root(object):
 
             image_unique_id = str(curs.fetchall()[0][0])
 
-            os.system("mv "+tmp_filename+" /home/ec2-user/images/image"+image_unique_id+".jpeg")
+            os.system("mv "+tmp_filename+" /efs/ec2-user/images/image"+image_unique_id+".jpeg")
             
             conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
 
@@ -370,7 +370,7 @@ class Root(object):
 
             video_unique_id = str(curs.fetchall()[0][0])
 
-            os.system("mv "+tmp_filename+" /home/ec2-user/videos/video"+video_unique_id+".mp4")
+            os.system("mv "+tmp_filename+" /efs/ec2-user/videos/video"+video_unique_id+".mp4")
             
             conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
 
