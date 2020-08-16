@@ -24,6 +24,7 @@ if __name__ == '__main__':
 
 { 
 
+    '/favicon.ico': { 'tools.staticfile.on': True, 'tools.staticfile.filename': '/home/ec2-user/server/favicon.ico' }, 
     '/robots.txt': { 'tools.staticfile.on': True, 'tools.staticfile.filename': '/home/ec2-user/server/robots.txt'  },
     
 }
