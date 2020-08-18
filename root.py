@@ -116,13 +116,16 @@ class Root(object):
             
             for post in posts:
                 post_dict = dict(zip(colnames, post))
-                body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
+                body_string += "<div class=\"post\">\n"
+                body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br><br>\n"
 
                 if post_dict["video_unique_id"] != None:
                     body_string += "<video width=\"320\" height=\"240\" controls>  <source src=\"https://video.n-plat.com/?filename=video"+str(post_dict["video_unique_id"])+".mp4\" type=\"video/mp4\"></video><br>\n"
 
                 if post_dict["image_unique_id"] != None:
-                    body_string += "<img width=\"320\" height=\"240\" src=\"https://image.n-plat.com/?filename=image"+str(post_dict["image_unique_id"])+".jpeg\"><br>\n"                    
+                    body_string += "<figure width=\"auto\"><img style=\"max-width: 300; max-height: 300\" src=\"https://image.n-plat.com/?filename=image"+str(post_dict["image_unique_id"])+".jpeg\"></img></figure><br>\n"
+
+                body_string += "</div>"    
 
             body_string += "<center>\n"
             
