@@ -119,10 +119,10 @@ class Root(object):
                 body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
 
                 if post_dict["video_unique_id"] != None:
-                    body_string += "<video width=\"640\" height=\"480\" controls>  <source src=\"https://video.n-plat.com/?filename=video"+str(post_dict["video_unique_id"])+".mp4\" type=\"video/mp4\"></video><br>\n"
+                    body_string += "<video width=\"320\" height=\"240\" controls>  <source src=\"https://video.n-plat.com/?filename=video"+str(post_dict["video_unique_id"])+".mp4\" type=\"video/mp4\"></video><br>\n"
 
                 if post_dict["image_unique_id"] != None:
-                    body_string += "<img src=\"https://image.n-plat.com/?filename=image"+str(post_dict["image_unique_id"])+".jpeg\"><br>\n"                    
+                    body_string += "<img width=\"320\" height=\"240\" src=\"https://image.n-plat.com/?filename=image"+str(post_dict["image_unique_id"])+".jpeg\"><br>\n"                    
 
             body_string += "<center>\n"
             
