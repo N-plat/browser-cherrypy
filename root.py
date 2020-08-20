@@ -3,23 +3,22 @@ import MySQLdb
 import cherrypy
 
 import os
-#from view import View
 
-#from chat import Chat
+import json
 
 from auth import Authenticate
+
+from followers import Followers
+
+from following import Following
+
+from post import Post
 
 from register import Register
 
 #from stream import Stream
 
 #from images import Images
-
-#from about import About
-
-#from emails import Email
-
-#from compose import Compose
 
 from cherrypy.lib import static
 
@@ -35,23 +34,19 @@ class Root(object):
         'tools.sessions.locking': 'explicit' #this and the acquire_lock and the release_lock statements in the login and logout functions are necessary so that multiple ajax requests can be processed in parallel in a single session
     }
 
-#    view = View()
-
-#    chat = Chat()
-
 #    stream = Stream()
 
 #    images = Images()    
 
+    following = Following()
+
+    followers = Followers()
+
+    post = Post()
+
     auth = Authenticate()
 
-#    loginlogout = Register()
-
     register = Register()
-
-#    about = About()
-
-#    email = Email()
 
 #    @cherrypy.expose
 #    def default(self,*args):
@@ -176,7 +171,7 @@ class Root(object):
             conn.close()
             
             body_string = """<center>
-            <form id="post_form" method="post" action="post" enctype="multipart/form-data">
+            <form target="console_iframe" id="post_form" method="post" action="post" enctype="multipart/form-data">
             <input type="file" id="video" name="video"/>
             <br><br>
             <input type="file" id="image" name="image"/>
@@ -186,6 +181,7 @@ class Root(object):
             Submit
             </button>
             </form>
+            <iframe name="console_iframe" id ="console_iframe" class="terminal" /></iframe>
             </center>"""
         
             body_string += "<center>\n"
@@ -194,7 +190,46 @@ class Root(object):
                 post_dict = dict(zip(colnames, post))
                 body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
 
-            body_string += "<center>\n"
+            body_string += "</center>\n"
+
+            body_string += """
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
+<script type="text/javascript">
+
+$('#post_form').submit(function(event) {
+   event.preventDefault();
+   var $this = $(this);
+   var formdata = new FormData($(this)[0]);         
+   $.ajax({
+      url: $this.attr('action'),
+      type: 'POST',
+      data: formdata,
+      processData: false,
+      contentType: false,
+      success: function(data){
+        json_object = JSON.parse(data)
+        if (json_object["success"]) {
+            var console_iframe = document.getElementById('console_iframe');
+            console_iframe.contentWindow.document.open();
+            console_iframe.contentWindow.document.close();
+//            $('#register_form').hide();
+            console_iframe.contentWindow.document.write('<head><base target="_parent"></head><center style="color:blue;font-size:20px;font-weight:bold">Post was successful.</center>');
+        }
+        else {
+            var console_iframe = document.getElementById('console_iframe');
+            console_iframe.contentWindow.document.open();
+            console_iframe.contentWindow.document.close();
+            console_iframe.contentWindow.document.write('<center style="color:red;font-size:20px;font-weight:bold;white-space:pre-wrap">'+json_object["errors"]+'</center>');
+        }
+      },
+      error : function (data) {
+        var console_iframe = document.getElementById('console_iframe');
+        console_iframe.write("Error.");
+      }
+   });
+});
+</script> 
+"""
             
             desktop_html_string = open("desktop.html").read()
             
@@ -240,48 +275,57 @@ class Root(object):
         if "User-Agent" in cherrypy.request.headers and ("Android" in cherrypy.request.headers['User-Agent'] or "iPhone" in cherrypy.request.headers['User-Agent'] or "iPad" in cherrypy.request.headers['User-Agent']):
             is_mobile = True
 
-        secrets_file=open("/home/ec2-user/secrets.txt")
+        valid_username = True    
+            
+        for c in user:
+            if c != 'a' and c != 'b' and c != 'c' and c != 'd' and c != 'e' and c != 'f' and c != 'g' and c != 'h' and c != 'i' and c != 'j' and c != 'k' and c != 'l' and c != 'm' and c != 'n' and c != 'o' and c != 'p' and c != 'q' and c != 'r' and c != 's' and c != 't' and c != 'u' and c != 'v' and c != 'w' and c != 'x' and c != 'y' and c != 'z' and c != 'A' and c != 'B' and c != 'C' and c != 'D' and c != 'E' and c != 'F' and c != 'G' and c != 'H' and c != 'I' and c != 'J' and c != 'K' and c != 'L' and c != 'M' and c != 'N' and c != 'O' and c != 'P' and c != 'Q' and c != 'R' and c != 'S' and c != 'T' and c != 'U' and c != 'V' and c != 'W' and c != 'X' and c != 'Y' and c != 'Z' and c != '0' and c != '1' and c != '2' and c != '3' and c != '4' and c != '5' and c != '6' and c != '7' and c != '8' and c != '9' and c != '_' and c != '-' and c != '.':
+                valid_username = False
 
-        passwords=secrets_file.read().rstrip('\n')
+        if not valid_username:
+            body_string = "<center>Invalid username</center>"
+        else:    
+            secrets_file=open("/home/ec2-user/secrets.txt")
 
-        db_password = passwords.split('\n')[0]
-        
-        dbname = "nplat"
-
-        conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
-        
-        curs = conn.cursor()
-        
-        curs.execute("use "+dbname+";")
+            passwords=secrets_file.read().rstrip('\n')
+            
+            db_password = passwords.split('\n')[0]
+            
+            dbname = "nplat"
+            
+            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
+            
+            curs = conn.cursor()
     
-        curs.execute("select * from user_info where username=\""+user+"\";")
+            curs.execute("use "+dbname+";")
+       
+            curs.execute("select * from user_info where username=\""+user+"\";")
 
-        userinfo_fetchall = curs.fetchall()
+            userinfo_fetchall = curs.fetchall()
         
-        if len(userinfo_fetchall):
-            assert(len(userinfo_fetchall) == 1)
-            colnames = [desc[0] for desc in curs.description]
-            name_string = "<center>\n"
-            for userinfo in userinfo_fetchall:
-                userinfo_dict=dict(zip(colnames, userinfo))        
-                name_string += "<h2>" + userinfo_dict["name"] + "</h2>\n<br>\n" 
-            name_string += "</center>\n"
+            if len(userinfo_fetchall):
+                assert(len(userinfo_fetchall) == 1)
+                colnames = [desc[0] for desc in curs.description]
+                name_string = "<center>\n"
+                for userinfo in userinfo_fetchall:
+                    userinfo_dict=dict(zip(colnames, userinfo))        
+                    name_string += "<h2>" + userinfo_dict["name"] + "</h2>\n<br>\n" 
+                name_string += "</center>\n"
 
-            curs.execute("select * from posts where username = \""+user+"\" order by time desc;")
-            colnames = [desc[0] for desc in curs.description]
-            posts=curs.fetchall()
+                curs.execute("select * from posts where username = \""+user+"\" order by time desc;")
+                colnames = [desc[0] for desc in curs.description]
+                posts=curs.fetchall()
 
-            if len(posts) != 0:
-                body_string = "<center>\n"
-                for post in posts:
-                    post_dict = dict(zip(colnames, post))
-                    body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
-                body_string += "<center>\n"
+                if len(posts) != 0:
+                    body_string = "<center>\n"
+                    for post in posts:
+                        post_dict = dict(zip(colnames, post))
+                        body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
+                    body_string += "<center>\n"
+                else:
+                    body_string="<center><i>"+user+" has not posted anything yet</i></center>"
+
             else:
-                body_string="<center><i>"+user+" has not posted anything yet</i></center>"
-
-        else:
-            body_string = "<center>Username not found</center>"
+                body_string = "<center>Username not found</center>"
                 
         desktop_html_string = open("desktop.html").read()
                 
@@ -307,105 +351,3 @@ class Root(object):
             html_string = desktop_html_string 
             
         return html_string
-
-    @cherrypy.expose
-    def post(self, text, video, image):
-
-        assert(len(image.filename) == 0 or len(video.filename) == 0)
-        
-        secrets_file=open("/home/ec2-user/secrets.txt")
-
-        passwords=secrets_file.read().rstrip('\n')
-
-        db_password = passwords.split('\n')[0]
-
-        dbname = "nplat"
-
-        if len(image.filename) > 0:
-
-            tmp_filename=os.popen("mktemp").read().rstrip('\n')
-            open(tmp_filename,'wb').write(image.file.read());
-
-            output=os.popen("clamscan  --stdout --quiet "+tmp_filename+" 2>&1").read()
-
-            if len(output) > 0:
-                return
-            
-            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
-        
-            curs = conn.cursor()
-            curs.execute("use "+str(dbname)+";")
-            curs.execute("insert into images values(NULL,%s,now(6),now(6))", [cherrypy.session.get('_cp_username')])
-            conn.commit()
-        
-            curs.execute("SELECT LAST_INSERT_ID()")
-            conn.commit()
-
-            image_unique_id = str(curs.fetchall()[0][0])
-
-            os.system("mv "+tmp_filename+" /efs/ec2-user/images/image"+image_unique_id+".jpeg")
-            
-            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
-
-            curs = conn.cursor()
-
-            curs.execute("use "+dbname+";")
-
-            curs.execute("insert into posts set username = \""+cherrypy.session.get('_cp_username')+"\", text = \""+text.replace('"','\\\"').replace("'","\\\'")+"\", time=now(6), image_unique_id = "+image_unique_id)
-
-            conn.commit()
-
-            conn.close()
-
-        elif len(video.filename) > 0:
-
-            tmp_filename=os.popen("mktemp").read().rstrip('\n')
-            open(tmp_filename,'wb').write(video.file.read());
-
-            output=os.popen("clamscan  --stdout --quiet "+tmp_filename+" 2>&1").read()
-
-            if len(output) > 0:
-                return
-
-            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
-        
-            curs = conn.cursor()
-            curs.execute("use "+str(dbname)+";")
-
-            curs.execute("insert into videos values(NULL,%s,now(6),now(6))", [cherrypy.session.get('_cp_username')])
-            conn.commit()
-        
-            curs.execute("SELECT LAST_INSERT_ID()")
-            conn.commit()
-
-            video_unique_id = str(curs.fetchall()[0][0])
-
-            os.system("mv "+tmp_filename+" /efs/ec2-user/videos/video"+video_unique_id+".mp4")
-            
-            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
-
-            curs = conn.cursor()
-
-            curs.execute("use "+dbname+";")
-
-            curs.execute("insert into posts set username = \""+cherrypy.session.get('_cp_username')+"\", text = \""+text.replace('"','\\\"').replace("'","\\\'")+"\", time=now(6), video_unique_id = "+video_unique_id)
-
-            conn.commit()
-
-            conn.close()
-
-        else:
-
-            conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
-
-            curs = conn.cursor()
-
-            curs.execute("use "+dbname+";")
-
-            curs.execute("insert into posts set username = \""+cherrypy.session.get('_cp_username')+"\", text = \""+text.replace('"','\\\"').replace("'","\\\'")+"\", time=now(6)")
-
-            conn.commit()
-
-            conn.close()
-
-            
