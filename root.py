@@ -14,7 +14,13 @@ from following import Following
 
 from post import Post
 
+from myposts import MyPosts
+
 from register import Register
+
+from feed import Feed
+
+from follow import Follow
 
 #from stream import Stream
 
@@ -38,11 +44,17 @@ class Root(object):
 
 #    images = Images()    
 
+    follow = Follow()
+
     following = Following()
 
     followers = Followers()
 
+    myposts = MyPosts()
+    
     post = Post()
+
+    feed = Feed()
 
     auth = Authenticate()
 

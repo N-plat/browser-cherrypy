@@ -298,7 +298,7 @@ $('#register_form').submit(function(event) {{
                 print json.dumps(json_object)
                 return json.dumps(json_object)
 
-            if username == "auth" or username == "register":
+            if username in ["auth","register","feed","post","follow","following","followers"]:
                 json_object["success"] = False
                 json_object["errors"].append("Invalid username.")
                 os.system("rm /home/ec2-user/registering_someone");
