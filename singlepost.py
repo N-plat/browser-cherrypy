@@ -10,6 +10,8 @@ from cherrypy.lib import static
 
 from require import require
 
+from auth import is_session_authenticated
+
 class SinglePost(object):
 
     _cp_config = {
@@ -25,9 +27,12 @@ class SinglePost(object):
 
         disclaimer_string = open("disclaimer.html").read()
 
-        
-        desktop_menu_string = open("desktop_authenticated_menu.html").read()
-        mobile_menu_string = open("mobile_authenticated_menu.html").read()
+        if is_session_authenticated():
+            desktop_menu_string = open("desktop_authenticated_menu.html").read()
+            mobile_menu_string = open("mobile_authenticated_menu.html").read()
+        else:
+            desktop_menu_string = open("desktop_unauthenticated_menu.html").read()
+            mobile_menu_string = open("mobile_unauthenticated_menu.html").read()
         
         secrets_file=open("/home/ec2-user/secrets.txt")
 
