@@ -162,8 +162,6 @@ $('#post_form').submit(function(event) {
     @cherrypy.expose
     def post(self, text, video, image):
 
-        cherrypy.session.get('_cp_username')
-        
         assert(len(image.filename) == 0 or len(video.filename) == 0)
         
         secrets_file=open("/home/ec2-user/secrets.txt")
