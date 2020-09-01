@@ -49,14 +49,6 @@ class Follow(object):
         
         curs.execute("use "+dbname+";")
             
-        curs.execute("select * from posts where username = \""+cherrypy.session.get('_cp_username')+"\" order by time desc;")
-            
-        colnames = [desc[0] for desc in curs.description]
-
-        posts=curs.fetchall()
-        
-        conn.close()
-            
         body_string = """<center>
         <form target="console_iframe" id="follow_form" method="post" action="follow" enctype="multipart/form-data">
         <input type="text" id="username" name="username"/> <br><br>
@@ -67,14 +59,6 @@ class Follow(object):
         <iframe name="console_iframe" id ="console_iframe" class="terminal" /></iframe>
         </center>"""
         
-        body_string += "<center>\n"
-            
-        for post in posts:
-            post_dict = dict(zip(colnames, post))
-            body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br>\n"
-            
-        body_string += "</center>\n"
-
         body_string += """
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
 <script type="text/javascript">
@@ -140,6 +124,7 @@ $('#follow_form').submit(function(event) {
         return html_string
 
     @cherrypy.expose
+    @require()
     def follow(self, username):
 
         secrets_file=open("/home/ec2-user/secrets.txt")

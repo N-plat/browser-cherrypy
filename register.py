@@ -61,36 +61,39 @@ class Register(object):
 </center>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
   <script type="text/javascript">
-$('#register_form').submit(function(event) {{
+$('#register_form').submit(function(event) {
    event.preventDefault();
    var $this = $(this);
-   $.ajax({{
+   alert($this.serialize());
+   alert($this);
+   alert(JSON.stringify({"a": "b"}));
+   $.ajax({
       url: $this.attr('action'),
       type: 'POST',
       data: $this.serialize(),
-      success: function(data){{
+      success: function(data){
         json_object = JSON.parse(data)
-        if (json_object["success"]) {{
+        if (json_object["success"]) {
             var console_iframe = document.getElementById('console_iframe');
             console_iframe.contentWindow.document.open();
             console_iframe.contentWindow.document.close();
             $('#register_form').hide();
             console_iframe.contentWindow.document.write('<head><base target="_parent"></head><center style="color:blue;font-size:20px;font-weight:bold">Registration was successful.<br>You can now <a href="/auth/login/">login</a>.</center>');
             gtag_report_conversion();
-        }}
-        else {{
+        }
+        else {
             var console_iframe = document.getElementById('console_iframe');
             console_iframe.contentWindow.document.open();
             console_iframe.contentWindow.document.close();
             console_iframe.contentWindow.document.write('<center style="color:red;font-size:20px;font-weight:bold;white-space:pre-wrap">'+json_object["errors"]+'</center>');
-        }}
-      }},
-      error : function (data) {{
+        }
+      },
+      error : function (data) {
         var console_iframe = document.getElementById('console_iframe');
         console_iframe.write("Error.");
-      }}
-   }});
-}});
+      }
+   });
+});
 </script>        
 <br><br>
 """
