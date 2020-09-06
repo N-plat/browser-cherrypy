@@ -135,7 +135,7 @@ $('img.heart').click(function(event) {
    event.preventDefault();
    request_json_object = {"post_id" : event.target.parentNode.parentNode.lastChild.firstChild.href.split('=')[1]}
    $.ajax({
-      url: 'love',
+      url: '/love/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(request_json_object),
@@ -159,7 +159,7 @@ $('img.repost').click(function(event) {
    event.preventDefault();
    request_json_object = {"post_id" : event.target.parentNode.parentNode.lastChild.firstChild.href.split('=')[1]}
    $.ajax({
-      url: 'repost',
+      url: '/repost/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(request_json_object),
@@ -233,7 +233,16 @@ $('img.repost').click(function(event) {
 
         curs.execute("use "+dbname+";")
 
-        curs.execute('insert into posts set username="'+cherrypy.session.get('_cp_username')+'", parent_unique_id="'+str(post_id)+'", time=now(6);')
+        curs.execute("select * from posts where username = \""+cherrypy.session.get('_cp_username')+"\" and parent_unique_id = \""+post_id+"\";")
+
+        if len(curs.fetchall()) > 0:
+                json_object["success"] = False
+                json_object["errors"] = ["You already reposted this post."]
+
+                print json.dumps(json_object)
+                return json.dumps(json_object)
+        
+        curs.execute('insert into posts set username="'+cherrypy.session.get('_cp_username')+'", parent_unique_id="'+post_id+'", time=now(6);')
 
         conn.commit()
 
@@ -264,6 +273,18 @@ $('img.repost').click(function(event) {
 
         curs.execute("use "+dbname+";")
 
+        curs.execute("select * from loves where username = \""+cherrypy.session.get('_cp_username')+"\" and post_unique_id = \""+post_id+"\";")
+
+        if len(curs.fetchall()) > 0:
+                json_object["success"] = False
+                json_object["errors"] = ["You already loved this post."]
+
+                print json.dumps(json_object)
+                return json.dumps(json_object)
+        
         curs.execute('insert into loves set username="'+cherrypy.session.get('_cp_username')+'", post_unique_id="'+post_id+'", time = now(6);')
 
         conn.commit()
+
+        print json.dumps(json_object)
+        return json.dumps(json_object)

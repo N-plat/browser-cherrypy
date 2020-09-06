@@ -24,6 +24,10 @@ from follow import Follow
 
 from singlepost import SinglePost
 
+from love import Love
+
+from repost import Repost
+
 #from stream import Stream
 
 #from images import Images
@@ -68,6 +72,10 @@ class Root(object):
     register = Register()
 
     singlepost = SinglePost()
+
+    love = Love()
+    
+    repost = Repost()
     
 #    @cherrypy.expose
 #    def default(self,*args):
@@ -340,7 +348,7 @@ $('img.heart').click(function(event) {
    event.preventDefault();
    request_json_object = {"post_id" : event.target.parentNode.parentNode.lastChild.firstChild.href.split('=')[1]}
    $.ajax({
-      url: '/love',
+      url: '/love/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(request_json_object),
@@ -363,7 +371,7 @@ $('img.repost').click(function(event) {
    event.preventDefault();
    request_json_object = {"post_id" : event.target.parentNode.parentNode.lastChild.firstChild.href.split('=')[1]}
    $.ajax({
-      url: '/repost',
+      url: '/repost/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(request_json_object),
@@ -417,66 +425,3 @@ $('img.repost').click(function(event) {
             html_string = desktop_html_string 
             
         return html_string
-
-
-    @cherrypy.expose
-    @require()
-    @json_in
-    def repost(self):
-
-        post_id = cherrypy.request.json['post_id']        
-
-        secrets_file=open("/home/ec2-user/secrets.txt")
-
-        passwords=secrets_file.read().rstrip('\n')
-
-        db_password = passwords.split('\n')[0]
-
-        dbname = "nplat"
-
-        json_object = {}
-
-        json_object["success"] = True
-
-        json_object["errors"] = []
-
-        conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
-
-        curs = conn.cursor()
-
-        curs.execute("use "+dbname+";")
-
-        curs.execute('insert into posts set username="'+cherrypy.session.get('_cp_username')+'", parent_unique_id="'+str(post_id)+'", time=now(6);')
-
-        conn.commit()
-
-    @cherrypy.expose
-    @require()
-    @json_in
-    def love(self):
-
-        post_id = cherrypy.request.json['post_id']        
-
-        secrets_file=open("/home/ec2-user/secrets.txt")
-
-        passwords=secrets_file.read().rstrip('\n')
-
-        db_password = passwords.split('\n')[0]
-
-        dbname = "nplat"
-
-        json_object = {}
-
-        json_object["success"] = True
-
-        json_object["errors"] = []
-
-        conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
-
-        curs = conn.cursor()
-
-        curs.execute("use "+dbname+";")
-
-        curs.execute('insert into loves set username="'+cherrypy.session.get('_cp_username')+'", post_unique_id="'+post_id+'", time = now(6);')
-
-        conn.commit()
