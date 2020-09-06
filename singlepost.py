@@ -94,8 +94,8 @@ class SinglePost(object):
                     else:
                         body_string += "<img style=\"max-width: 300; max-height: 300\" src=\"https://image.n-plat.com/?filename=image"+str(post_dict["(select image_unique_id from posts where unique_id=t1.parent_unique_id limit 1)"])+".jpeg\"></img><br>\n"
                             
-                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:left;\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=heart_outline.png\"/>"+str(post_dict["(select count(*) from loves where post_unique_id=t1.parent_unique_id)"])+"</p>"
-                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:center;\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=repost.png\"/>"+str(post_dict["(select count(*) from posts where parent_unique_id=t1.parent_unique_id)"])+"</p>"                
+                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:left;\"><img class=\"heart\" height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=heart_outline.png\"/>"+str(post_dict["(select count(*) from loves where post_unique_id=t1.parent_unique_id)"])+"</p>"
+                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:center;\"><img class=\"repost\" height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=repost.png\"/>"+str(post_dict["(select count(*) from posts where parent_unique_id=t1.parent_unique_id)"])+"</p>"                
                 body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:right;\"><a href=\"https://n-plat.com/singlepost/?id="+str(+post_dict["unique_id"])+"\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=share.png\"/></a></p>"
             else:
                 
@@ -154,6 +154,7 @@ $('img.heart').click(function(event) {
       }
    });
 });
+
 $('img.repost').click(function(event) {
    event.preventDefault();
    request_json_object = {"post_id" : event.target.parentNode.parentNode.lastChild.firstChild.href.split('=')[1]}
