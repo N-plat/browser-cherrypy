@@ -74,7 +74,7 @@ class Feed(object):
 
             if post_dict["parent_unique_id"]:
 
-                body_string += "<p style=\"float:left;text-align:left;position:relative;top:-20px;width:75%;\"><b>"+post_dict["(select username from posts where unique_id=t1.parent_unique_id limit 1)"] + "</b> (reposted by "+post_dict["username"]+")</p>"
+                body_string += "<p style=\"float:left;text-align:left;position:relative;top:-20px;width:75%;\"><b>"+post_dict["(select username from posts where unique_id=t1.parent_unique_id limit 1)"] + "</b> (reposted by <b>"+post_dict["username"]+"</b>)</p>"
                 body_string += "<p style=\"float:left;text-align:right;position:relative;top:-20px;width:25%;\">"+post_dict["(select time from posts where unique_id=t1.parent_unique_id limit 1)"].strftime(datetime_string_fmt)+"</p>"
 
                 body_string += "<i>" + post_dict["(select text from posts where unique_id=t1.parent_unique_id limit 1)"] + "</i><br><br>\n"
@@ -94,7 +94,7 @@ class Feed(object):
                             
                 body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:left;\"><img class=\"heart\" height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=heart_outline.png\"/>"+str(post_dict["(select count(*) from loves where post_unique_id=t1.parent_unique_id)"])+"</p>"
                 body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:center;\"><img class=\"repost\" height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=repost.png\"/>"+str(post_dict["(select count(*) from posts where parent_unique_id=t1.parent_unique_id)"])+"</p>"                
-                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:right;\"><a href=\"https://n-plat.com/singlepost/?id="+str(+post_dict["unique_id"])+"\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=share.png\"/></a></p>"
+                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:right;\"><a href=\"https://n-plat.com/singlepost/?id="+str(+post_dict["parent_unique_id"])+"\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=share.png\"/></a></p>"
             else:
                 
                 body_string += "<p style=\"float:left;text-align:left;position:relative;top:-20px;width:75%;\"><b>"+post_dict["username"] + "</b></p>"
