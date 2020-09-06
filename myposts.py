@@ -71,7 +71,7 @@ class MyPosts(object):
 
             if post_dict["parent_unique_id"]:
 
-                body_string += "<p style=\"float:left;text-align:left;position:relative;top:-20px;width:75%;\"><b>"+post_dict["(select username from posts where unique_id=t1.parent_unique_id limit 1)"] + "</b> (reposted by "+post_dict["username"]+")</p>"
+                body_string += "<p style=\"float:left;text-align:left;position:relative;top:-20px;width:75%;\"><b>"+post_dict["(select username from posts where unique_id=t1.parent_unique_id limit 1)"] + "</b> (reposted by <b>"+post_dict["username"]+"</b>)</p>"
                 body_string += "<p style=\"float:left;text-align:right;position:relative;top:-20px;width:25%;\">"+post_dict["(select time from posts where unique_id=t1.parent_unique_id limit 1)"].strftime(datetime_string_fmt)+"</p>"
 
                 body_string += "<i>" + post_dict["(select text from posts where unique_id=t1.parent_unique_id limit 1)"] + "</i><br><br>\n"

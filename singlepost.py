@@ -56,7 +56,7 @@ class SinglePost(object):
         
         curs.execute("use "+dbname+";")
             
-        curs.execute("select t1.*,(select unique_id from posts where unique_id=t1.parent_unique_id limit 1),(select text from posts where unique_id=t1.parent_unique_id limit 1),(select video_unique_id from posts where unique_id=t1.parent_unique_id limit 1),(select image_unique_id from posts where unique_id=t1.parent_unique_id limit 1),(select time from posts where unique_id=t1.parent_unique_id limit 1),(select username from posts where unique_id=t1.parent_unique_id limit 1),(select count(*) from loves where post_unique_id=t1.unique_id),(select count(*) from posts where parent_unique_id=t1.unique_id) FROM posts as t1 WHERE unique_id=\""+id+"\";")
+        curs.execute("select t1.*,(select unique_id from posts where unique_id=t1.parent_unique_id limit 1),(select text from posts where unique_id=t1.parent_unique_id limit 1),(select video_unique_id from posts where unique_id=t1.parent_unique_id limit 1),(select image_unique_id from posts where unique_id=t1.parent_unique_id limit 1),(select time from posts where unique_id=t1.parent_unique_id limit 1),(select username from posts where unique_id=t1.parent_unique_id limit 1),(select count(*) from loves where post_unique_id=t1.unique_id),(select count(*) from posts where parent_unique_id=t1.unique_id),(select count(*) from loves where post_unique_id=t1.parent_unique_id),(select count(*) from posts where parent_unique_id=t1.parent_unique_id) FROM posts as t1 WHERE unique_id=\""+id+"\";")
 
         colnames = [desc[0] for desc in curs.description]
 
@@ -76,7 +76,7 @@ class SinglePost(object):
 
             if post_dict["parent_unique_id"]:
 
-                body_string += "<p style=\"float:left;text-align:left;position:relative;top:-20px;width:75%;\"><b>"+post_dict["(select username from posts where unique_id=t1.parent_unique_id limit 1)"] + "</b> (reposted by "+post_dict["username"]+")</p>"
+                body_string += "<p style=\"float:left;text-align:left;position:relative;top:-20px;width:75%;\"><b>"+post_dict["(select username from posts where unique_id=t1.parent_unique_id limit 1)"] + "</b> (reposted by <b>"+post_dict["username"]+"</b>)</p>"
                 body_string += "<p style=\"float:left;text-align:right;position:relative;top:-20px;width:25%;\">"+post_dict["(select time from posts where unique_id=t1.parent_unique_id limit 1)"].strftime(datetime_string_fmt)+"</p>"
 
                 body_string += "<i>" + post_dict["(select text from posts where unique_id=t1.parent_unique_id limit 1)"] + "</i><br><br>\n"
@@ -94,8 +94,8 @@ class SinglePost(object):
                     else:
                         body_string += "<img style=\"max-width: 300; max-height: 300\" src=\"https://image.n-plat.com/?filename=image"+str(post_dict["(select image_unique_id from posts where unique_id=t1.parent_unique_id limit 1)"])+".jpeg\"></img><br>\n"
                             
-                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:left;\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=heart_outline.png\"/>"+str(post_dict["(select count(*) from loves where post_unique_id=unique_id)"])+"</p>"
-                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:center;\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=repost.png\"/>"+str(post_dict["(select count(*) from posts where parent_unique_id=unique_id)"])+"</p>"                
+                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:left;\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=heart_outline.png\"/>"+str(post_dict["(select count(*) from loves where post_unique_id=t1.parent_unique_id)"])+"</p>"
+                body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:center;\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=repost.png\"/>"+str(post_dict["(select count(*) from posts where parent_unique_id=t1.parent_unique_id)"])+"</p>"                
                 body_string += "<p style=\"float:left;position:relative;bottom:-20px;width:33.3333333333333333333333%;text-align:right;\"><a href=\"https://n-plat.com/singlepost/?id="+str(+post_dict["unique_id"])+"\"><img height=\"20\" width=\"20\" src=\"https://image.n-plat.com/?filename=share.png\"/></a></p>"
             else:
                 

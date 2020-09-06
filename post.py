@@ -43,19 +43,6 @@ class Post(object):
         if "User-Agent" in cherrypy.request.headers and ("Android" in cherrypy.request.headers['User-Agent'] or "iPhone" in cherrypy.request.headers['User-Agent'] or "iPad" in cherrypy.request.headers['User-Agent']):
             is_mobile = True
             
-        conn = MySQLdb.connect(host='nplat-instance.cphov5mfizlt.us-west-2.rds.amazonaws.com', user='browser', passwd=db_password, port=3306)
-            
-        curs = conn.cursor()
-        
-        curs.execute("use "+dbname+";")
-            
-        curs.execute("select * from posts where username = \""+cherrypy.session.get('_cp_username')+"\" order by time desc;")
-            
-        colnames = [desc[0] for desc in curs.description]
-
-        posts=curs.fetchall()
-        
-        conn.close()
             
         body_string = """<center>
         <form target="console_iframe" id="post_form" method="post" action="post" enctype="multipart/form-data">
@@ -70,30 +57,6 @@ class Post(object):
         </form>
         <iframe name="console_iframe" id ="console_iframe" class="terminal" /></iframe>
         </center>"""
-        
-        body_string += "<center>\n"
-
-        for post in posts:
-            post_dict = dict(zip(colnames, post))
-            body_string += "<div class=\"post\">\n"
-            body_string += "<b>" + post_dict["username"] + "</b> <i>" + post_dict["text"] + "</i><br><br>\n"
-
-            if post_dict["video_unique_id"] != None:
-                if is_mobile:
-                    body_string += "<video width=\"90%\" height=\"240\" controls>  <source src=\"https://video.n-plat.com/?filename=video"+str(post_dict["video_unique_id"])+".mp4\" type=\"video/mp4\"></video><br>\n"
-                else:    
-                    body_string += "<video width=\"320\" height=\"240\" controls>  <source src=\"https://video.n-plat.com/?filename=video"+str(post_dict["video_unique_id"])+".mp4\" type=\"video/mp4\"></video><br>\n"
-
-
-            if post_dict["image_unique_id"] != None:
-                if is_mobile:
-                    body_string += "<img style=\"max-width: 90%; max-height: 300\" src=\"https://image.n-plat.com/?filename=image"+str(post_dict["image_unique_id"])+".jpeg\"></img><br>\n"
-                else:
-                    body_string += "<img style=\"max-width: 300; max-height: 300\" src=\"https://image.n-plat.com/?filename=image"+str(post_dict["image_unique_id"])+".jpeg\"></img><br>\n"
-
-            body_string += "</div>"    
-
-        body_string += "</center>\n"
         
         body_string += """
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
@@ -160,6 +123,7 @@ $('#post_form').submit(function(event) {
         return html_string
 
     @cherrypy.expose
+    @require()    
     def post(self, text, video, image):
 
         assert(len(image.filename) == 0 or len(video.filename) == 0)
